@@ -37,7 +37,7 @@ e-mail   :  support@circuitsathome.com
 #define UHS_HID_BOOT_KEY_PERIOD         0x63
 
 // Don't worry, GCC will optimize the result to a final value.
-#define bitsEndpoints(p) ((((p) & HID_PROTOCOL_KEYBOARD)? 2 : 0) | (((p) & HID_PROTOCOL_MOUSE)? 1 : 0))
+#define bitsEndpoints(p) ((((p) & HID_PROTOCOL_KEYBOARD)? 2 : 1) | (((p) & HID_PROTOCOL_MOUSE)? 1 : 1))
 #define totalEndpoints(p) ((bitsEndpoints(p) == 3) ? 3 : 2)
 #define epMUL(p) ((((p) & HID_PROTOCOL_KEYBOARD)? 1 : 0) + (((p) & HID_PROTOCOL_MOUSE)? 1 : 0))
 
@@ -405,7 +405,24 @@ uint32_t HIDBoot<BOOT_PROTOCOL, HID_SUBCLASS>::Init(uint32_t parent, uint32_t po
                         }
                 }
 
-                // GCC will optimize unused stuff away.
+				// GCC will optimize unused stuff away.
+				if (BOOT_PROTOCOL == HID_PROTOCOL_NONE) {
+					USBTRACE("HID_PROTOCOL_NONE\r\n");
+					for (uint32_t i = 0; i < num_of_conf; i++) {
+						ConfigDescParser<
+							USB_CLASS_HID,
+							HID_SUBCLASS,
+							HID_NONE_SUBCLASS,
+							CP_MASK_COMPARE_ALL> confDescrParserB(this);
+
+						pUsb->getConfDescr(bAddress, 0, i, &confDescrParserB);
+						if (bNumEP == ((uint8_t)(totalEndpoints(BOOT_PROTOCOL))))
+							break;
+
+					}
+				}
+				
+				// GCC will optimize unused stuff away.
                 if(BOOT_PROTOCOL & HID_PROTOCOL_MOUSE) {
                         USBTRACE("HID_PROTOCOL_MOUSE\r\n");
                         for(uint32_t i = 0; i < num_of_conf; i++) {
