@@ -13,6 +13,8 @@ Contact information
 Circuits At Home, LTD
 Web      :  http://www.circuitsathome.com
 e-mail   :  support@circuitsathome.com
+
+Modified by ejolivet to support HTC vive tracker
 */
 
 #ifndef HIDBOOT_H_INCLUDED
